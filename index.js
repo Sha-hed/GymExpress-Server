@@ -40,6 +40,7 @@ async function run() {
     const AppliedTrainer = client.db("GymExpress").collection("AppliedTrainer");
     const TrainerCollection = client.db("GymExpress").collection("Trainers");
     const ClassCollection = client.db("GymExpress").collection("Classes");
+    const BookingCollection = client.db("GymExpress").collection("Booking");
 
     const verifyAdmin = async (req, res, next) => {
       const email = req?.user?.email;
@@ -139,7 +140,7 @@ async function run() {
         time: sTrainee?.time,
         selectedSkill: sTrainee?.selectedSkill,
         experience: sTrainee?.experience,
-        description: sTrainee?.description
+        description: sTrainee?.description,
       };
       const insertedInfo = await TrainerCollection.insertOne(trainer);
       const updatedInfo = await UserCollection.updateOne(filter, updateDoc);
@@ -150,12 +151,12 @@ async function run() {
       const result = await TrainerCollection.find().toArray();
       res.send(result);
     });
-    app.get('/getTrainer/:id', async(req,res)=>{
+    app.get("/getTrainer/:id", async (req, res) => {
       const id = req.params.id;
-      const filter = { _id : new ObjectId(id)}
-      const result = await TrainerCollection.findOne(filter)
-      res.send(result)
-    })
+      const filter = { _id: new ObjectId(id) };
+      const result = await TrainerCollection.findOne(filter);
+      res.send(result);
+    });
     app.delete(
       "/deleteTrainer/:email",
       verifyToken,
@@ -181,25 +182,46 @@ async function run() {
       res.send(result);
     });
 
-    app.post('/addClass', verifyToken, verifyAdmin, async(req,res)=>{
+    app.post("/addClass", verifyToken, verifyAdmin, async (req, res) => {
       const addClass = req.body;
-      const result = await ClassCollection.insertOne(addClass)
-      res.send(result)
-    })
+      const result = await ClassCollection.insertOne(addClass);
+      res.send(result);
+    });
 
     //Class Related APIs
 
-    app.get('/getClasses', async(req,res)=>{
+    app.get("/getClasses", async (req, res) => {
       const result = await ClassCollection.find().toArray();
-      res.send(result)
-    })
+      res.send(result);
+    });
 
-    app.get('/getClass/:id', async(req,res)=>{
+    app.get("/getClass/:id", async (req, res) => {
       const id = req.params.id;
-      const filter = { _id: new ObjectId(id)}
-      const result = await ClassCollection.findOne(filter)
-      res.send(result)
-    })
+      const filter = { _id: new ObjectId(id) };
+      const result = await ClassCollection.findOne(filter);
+      res.send(result);
+    });
+    app.post("/bookingClass", verifyToken, async (req, res) => {
+      const bookingClass = req.body;
+      const result = await BookingCollection.insertOne(bookingClass);
+      res.send(result);
+    });
+
+    //User Dashboard Related APIs
+
+    app.get("/getBookedClass/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { userEmail: email };
+      const result = await BookingCollection.find(filter).toArray();
+      res.send(result);
+    });
+
+    app.get("/getTrainerBookedClass/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { trainerEmail: email };
+      const result = await BookingCollection.find(filter).toArray();
+      res.send(result);
+    });
 
     console.log("Successfully connected to MongoDB!");
   } finally {
