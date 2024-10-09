@@ -41,6 +41,7 @@ async function run() {
     const TrainerCollection = client.db("GymExpress").collection("Trainers");
     const ClassCollection = client.db("GymExpress").collection("Classes");
     const BookingCollection = client.db("GymExpress").collection("Booking");
+    const BlogCollection = client.db("GymExpress").collection("Blog");
 
     const verifyAdmin = async (req, res, next) => {
       const email = req?.user?.email;
@@ -222,6 +223,20 @@ async function run() {
       const result = await BookingCollection.find(filter).toArray();
       res.send(result);
     });
+
+
+    //Blog Related APIs
+    app.post('/blog', async(req,res)=>{
+      const blog = req.body;
+      const result = await BlogCollection.insertOne(blog)
+      res.send(result)
+    })
+
+    app.get('/blog', async(req,res)=>{
+      const result = await BlogCollection.find().toArray();
+      res.send(result)
+    })
+
 
     console.log("Successfully connected to MongoDB!");
   } finally {
