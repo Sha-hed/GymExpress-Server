@@ -125,6 +125,18 @@ async function run() {
       const result = await AppliedTrainer.find().toArray();
       res.send(result);
     });
+    app.delete(
+      "/appliedTrainer/:id",
+      verifyToken,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        const result = await AppliedTrainer.deleteOne(filter);
+        res.send(result);
+      }
+    );
+
     app.post("/addTrainer", verifyToken, verifyAdmin, async (req, res) => {
       const sTrainee = req.body;
       const filter = { email: sTrainee?.email };
@@ -225,31 +237,28 @@ async function run() {
       res.send(result);
     });
 
-
     //Blog Related APIs
-    app.post('/blog', async(req,res)=>{
+    app.post("/blog", async (req, res) => {
       const blog = req.body;
-      const result = await BlogCollection.insertOne(blog)
-      res.send(result)
-    })
+      const result = await BlogCollection.insertOne(blog);
+      res.send(result);
+    });
 
-    app.get('/blog', async(req,res)=>{
+    app.get("/blog", async (req, res) => {
       const result = await BlogCollection.find().toArray();
-      res.send(result)
-    })
+      res.send(result);
+    });
 
-    app.post('/review', async(req,res)=>{
+    app.post("/review", async (req, res) => {
       const review = req.body;
-      const result = await ReviewCollection.insertOne(review)
-      res.send(result)
-    })
+      const result = await ReviewCollection.insertOne(review);
+      res.send(result);
+    });
 
-    app.get('/review', async(req,res)=>{
-      const result = await ReviewCollection.find().toArray()
-      res.send(result)
-    })
-    
-
+    app.get("/review", async (req, res) => {
+      const result = await ReviewCollection.find().toArray();
+      res.send(result);
+    });
 
     console.log("Successfully connected to MongoDB!");
   } finally {
